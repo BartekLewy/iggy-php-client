@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Start Iggy
+        run: docker compose up -d
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -25,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit tests/
+
+      - name: Stop Iggy
+        run: docker compose down
