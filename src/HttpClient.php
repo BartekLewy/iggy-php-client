@@ -19,6 +19,18 @@ final readonly class HttpClient implements ClientInterface
     ) {
     }
 
+    public function ping(): string
+    {
+        $request = $this->requestFactory->createRequest(
+            'GET',
+            sprintf('%s:%s/ping', $this->baseUrl, $this->port)
+        );
+
+        $response = $this->client->sendRequest($request);
+
+        return $response->getBody()->getContents();
+    }
+
     /**
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */

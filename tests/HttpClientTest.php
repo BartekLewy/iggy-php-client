@@ -11,7 +11,18 @@ class HttpClientTest extends TestCase
 {
     private const BASE_URL = 'http://localhost';
     private const PORT = 3000;
-    
+
+
+    /**
+     * @test
+     */
+    public function it_returns_200_when_iggy_is_working(): void
+    {
+        $client = $this->createClient();
+        $response = $client->ping();
+
+        $this->assertEquals('pong', $response);
+    }
 
     /**
      * @test

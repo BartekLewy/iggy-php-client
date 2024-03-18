@@ -6,5 +6,7 @@ namespace Iggy;
 
 interface ClientInterface
 {
+    public function ping(): string;
+
     public function login(string $username, string $password): array;
 }
