@@ -11,8 +11,12 @@ class HttpClientTest extends TestCase
 {
     private const BASE_URL = 'http://localhost';
     private const PORT = 3000;
+    
 
-    public function test_login(): void
+    /**
+     * @test
+     */
+    public function it_returns_tokens_when_authenticate_successfully(): void
     {
         $client = $this->createClient();
         $response = $client->login('iggy', 'iggy');
@@ -29,6 +33,18 @@ class HttpClientTest extends TestCase
 
         $this->assertArrayHasKey('token', $response['tokens']['refresh_token']);
         $this->assertArrayHasKey('expiry', $response['tokens']['refresh_token']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_invalid_credentials_exception_when_credentials_are_incorrect(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Invalid credentials');
+
+        $client = $this->createClient();
+        $client->login('iggy', 'wrong');
     }
 
     private function createClient(): HttpClient

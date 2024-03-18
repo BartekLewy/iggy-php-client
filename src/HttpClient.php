@@ -7,16 +7,21 @@ namespace Iggy;
 use Psr\Http\Client\ClientInterface as PsrClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
-readonly class HttpClient implements ClientInterface
+final readonly class HttpClient implements ClientInterface
 {
+    private const HTTP_BAD_REQUEST = 400;
+
     public function __construct(
         private PsrClientInterface $client,
         private RequestFactoryInterface $requestFactory,
         private string $baseUrl,
-        private int $port = 3000
+        private int $port = 3000,
     ) {
     }
 
+    /**
+     * @throws \Psr\Http\Client\ClientExceptionInterface
+     */
     public function login(string $username, string $password): array
     {
         $request = $this->requestFactory->createRequest(
@@ -28,6 +33,10 @@ readonly class HttpClient implements ClientInterface
         $request = $request->withHeader('Content-Type', 'application/json');
 
         $response = $this->client->sendRequest($request);
+
+        if ($response->getStatusCode() === self::HTTP_BAD_REQUEST) {
+            throw new \RuntimeException($response->getBody()->getContents());
+        }
 
         return json_decode($response->getBody()->getContents(), true);
     }
