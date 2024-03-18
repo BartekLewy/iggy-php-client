@@ -52,4 +52,22 @@ final readonly class HttpClient implements ClientInterface
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
+    public function getUser(int $id, string $token): array
+    {
+        $request = $this->requestFactory->createRequest(
+            'GET',
+            sprintf('%s:%s/users/%s', $this->baseUrl, $this->port, $id)
+        );
+        $request = $request->withHeader('Authorization', sprintf('Bearer %s', $token));
+
+        $response = $this->client->sendRequest($request);
+
+        if ($response->getStatusCode() === 404) {
+            $response = json_decode($response->getBody()->getContents(), true);
+            throw new \RuntimeException($response['reason']);
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
 }

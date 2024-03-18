@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Iggy\Tests;
 
 use Iggy\HttpClient;
@@ -56,6 +58,40 @@ class HttpClientTest extends TestCase
 
         $client = $this->createClient();
         $client->login('iggy', 'wrong');
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_user(): void
+    {
+        $client = $this->createClient();
+        $response = $client->login('iggy', 'iggy');
+
+        $user = $client->getUser($response['user_id'], $response['tokens']['access_token']['token']);
+
+        $this->assertArrayHasKey('id', $user);
+        $this->assertArrayHasKey('created_at', $user);
+        $this->assertArrayHasKey('status', $user);
+        $this->assertArrayHasKey('username', $user);
+        $this->assertArrayHasKey('permissions', $user);
+
+        $this->assertArrayHasKey('global', $user['permissions']);
+        $this->assertArrayHasKey('streams', $user['permissions']);
+     }
+
+    /**
+     * @test
+     */
+    public function it_throws_user_not_found_exception_when_user_does_not_exist(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Resource with key: users:9999 was not found');
+
+        $client = $this->createClient();
+        $response = $client->login('iggy', 'iggy');
+
+        $client->getUser(9999, $response['tokens']['access_token']['token']);
     }
 
     private function createClient(): HttpClient

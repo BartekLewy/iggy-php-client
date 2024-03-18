@@ -9,4 +9,6 @@ interface ClientInterface
     public function ping(): string;
 
     public function login(string $username, string $password): array;
+
+    public function getUser(int $id, string $token): array;
 }
